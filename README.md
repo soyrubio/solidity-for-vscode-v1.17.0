@@ -24,6 +24,8 @@ Select the `solidity-for-vscode-1.17.0.vsix` file from the thesis attachments.
 
 Additionally, please make sure that you have Foundry's Anvil installed. For details see the [Foundry documentation](https://book.getfoundry.sh/getting-started/installation).
 
+Once everything is set up, either restart VS Code, or run the `Restart Extension Host` command from the command palette.
+
 ## References
 `./wake` is cloned from [https://github.com/Ackee-Blockchain/wake/tree/1f50b37ae1946bc8d4e5ce49d6d883ed2090fd63](https://github.com/Ackee-Blockchain/wake/commit/1f50b37ae1946bc8d4e5ce49d6d883ed2090fd63)
 
