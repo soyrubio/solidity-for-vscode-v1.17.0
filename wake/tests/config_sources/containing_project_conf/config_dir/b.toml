@@ -1,0 +1,2 @@
+[compiler.solc]
+remappings = ["wake=test-target"]

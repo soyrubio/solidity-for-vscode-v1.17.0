@@ -1,0 +1,1102 @@
+{
+    "name": "tools-for-solidity",
+    "displayName": "Solidity (Wake)",
+    "version": "1.17.0",
+    "publisher": "AckeeBlockchain",
+    "description": "Code fast and secure Solidity smart contracts on Ethereum with a Remix-like experience",
+    "keywords": [
+        "solidity",
+        "ethereum",
+        "blockchain",
+        "review",
+        "audit",
+        "security",
+        "compiler",
+        "remix",
+        "wake",
+        "evm",
+        "solhint"
+    ],
+    "homepage": "https://ackee.xyz/solidity-extension",
+    "bugs": {
+        "url": "https://github.com/Ackee-Blockchain/solidity-for-vscode/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Ackee-Blockchain/solidity-for-vscode.git"
+    },
+    "icon": "images/icon.png",
+    "engines": {
+        "vscode": "^1.75.0"
+    },
+    "categories": [
+        "Linters",
+        "Programming Languages",
+        "Visualization",
+        "Testing"
+    ],
+    "activationEvents": [
+        "onLanguage:solidity",
+        "workspaceContains:**/*.sol",
+        "onLanguage:wake-output"
+    ],
+    "main": "./dist/extension",
+    "contributes": {
+        "configuration": [
+            {
+                "title": "Configuration",
+                "order": -2,
+                "properties": {
+                    "wake.configuration.use_toml_if_present": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Use the configuration TOML file if present instead of the VS Code settings."
+                    },
+                    "wake.configuration.toml_path": {
+                        "type": "string",
+                        "default": "wake.toml",
+                        "description": "Path to the TOML configuration file relative to the workspace root."
+                    },
+                    "Tools-for-Solidity.wake.configuration.autoimport_remappings": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Automatically import Foundry remappings from the remappings.txt file in the workspace folder."
+                    }
+                }
+            },
+            {
+                "title": "Solidity",
+                "order": -1,
+                "properties": {
+                    "Tools-for-Solidity.trace.server": {
+                        "scope": "window",
+                        "type": "string",
+                        "enum": [
+                            "off",
+                            "messages",
+                            "verbose"
+                        ],
+                        "default": "off",
+                        "description": "Traces the communication between VS Code and the language server."
+                    },
+                    "Tools-for-Solidity.Wake.installationMethod": {
+                        "type": "string",
+                        "enum": [
+                            "conda",
+                            "pipx",
+                            "pip",
+                            "manual"
+                        ],
+                        "default": "conda",
+                        "markdownDescription": "Method used to install [Wake](https://getwake.io/) language server, which is required for the extension to work."
+                    },
+                    "Tools-for-Solidity.Wake.prerelease": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Install pre-release versions of Wake."
+                    },
+                    "Tools-for-Solidity.Wake.pathToExecutable": {
+                        "type": "string",
+                        "markdownDescription": "Path to Wake executable, overrides `#Tools-for-Solidity.Wake.installationMethod#`."
+                    },
+                    "Tools-for-Solidity.Wake.port": {
+                        "type": "integer",
+                        "markdownDescription": "Port on which Wake LSP is listening. Overrides both `#Tools-for-Solidity.Wake.installationMethod#` and `#Tools-for-Solidity.Wake.pathToExecutable#`. Leave empty to use the default port."
+                    },
+                    "Tools-for-Solidity.Wake.compiler.solc.ignoredWarnings": {
+                        "type": "array",
+                        "items": {
+                            "type": [
+                                "integer",
+                                "string"
+                            ]
+                        },
+                        "default": [],
+                        "description": "Ignore warnings with these codes from the solc compiler"
+                    }
+                }
+            },
+            {
+                "title": "Compiler",
+                "order": 0,
+                "properties": {
+                    "wake.compiler.solc.allow_paths": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [],
+                        "description": "Allow paths passed directly to the solc compiler."
+                    },
+                    "wake.compiler.solc.evm_version": {
+                        "type": "string",
+                        "enum": [
+                            "homestead",
+                            "tangerineWhistle",
+                            "spuriousDragon",
+                            "byzantium",
+                            "constantinople",
+                            "petersburg",
+                            "istanbul",
+                            "berlin",
+                            "london",
+                            "paris",
+                            "shanghai",
+                            "cancun",
+                            "prague",
+                            ""
+                        ],
+                        "default": "",
+                        "description": "EVM version passed to the solc compiler. If left empty, the compiler will choose the version automatically."
+                    },
+                    "wake.compiler.solc.exclude_paths": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [
+                            "node_modules",
+                            "venv",
+                            "lib",
+                            "script",
+                            "test"
+                        ],
+                        "description": "Files in these paths are excluded from LSP analysis unless imported from other non-excluded files."
+                    },
+                    "wake.compiler.solc.include_paths": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [
+                            "node_modules"
+                        ],
+                        "description": "Include paths used to search for non-relative import paths."
+                    },
+                    "wake.compiler.solc.remappings": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [],
+                        "markdownDescription": "Compiler remappings (see [Solidity documentation](https://docs.soliditylang.org/en/latest/using-the-compiler.html#base-path-and-import-remapping))."
+                    },
+                    "wake.compiler.solc.target_version": {
+                        "type": "string",
+                        "default": "",
+                        "description": "The version of the solc compiler used to compile all project files."
+                    },
+                    "wake.compiler.solc.via_IR": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ],
+                        "default": null,
+                        "enum": [
+                            null,
+                            true,
+                            false
+                        ],
+                        "markdownDescription": "Compile the code via the Yul intermediate language (see [Solidity docs](https://docs.soliditylang.org/en/latest/ir-breaking-changes.html)). If not set (null), let the compiler decide."
+                    },
+                    "wake.compiler.solc.optimizer.enabled": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ],
+                        "default": null,
+                        "enum": [
+                            null,
+                            true,
+                            false
+                        ],
+                        "description": "Compile the project with solc optimizations enabled. Setting this to 'null' (unset) disables most of the available optimizations. Setting this to 'false' disables all optimizations for Solidity <0.8.6 and has the same behavior as 'null' for Solidity >=0.8.6."
+                    },
+                    "wake.compiler.solc.optimizer.runs": {
+                        "type": "number",
+                        "default": 200,
+                        "description": "Configuration of the optimizer specifying how many times the code is intended to be run. Lower values optimize more for initial deployment cost, while higher values optimize more for high-frequency usage."
+                    }
+                }
+            },
+            {
+                "title": "Detectors",
+                "order": 1,
+                "properties": {
+                    "wake.detectors.exclude": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [],
+                        "description": "List of detectors (identified by their string or integer IDs) to exclude from the analysis."
+                    },
+                    "wake.detectors.only": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [],
+                        "description": "List of detectors (identified by their string or integer IDs) to only use in the analysis."
+                    },
+                    "wake.detectors.ignore_paths": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [
+                            "test",
+                            "venv"
+                        ],
+                        "description": "Any (sub)detections ending in these paths are removed. Intended for project Solidity test files."
+                    },
+                    "wake.detectors.exclude_paths": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [
+                            "node_modules",
+                            "lib"
+                        ],
+                        "description": "A detection is removed if whole (including subdetections) ends up in these paths. Intended for project Solidity dependencies."
+                    }
+                }
+            },
+            {
+                "title": "Printers",
+                "order": 2,
+                "properties": {
+                    "wake.printers.exclude": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [],
+                        "description": "List of printers (identified by their string name) not to run in the LSP server."
+                    },
+                    "wake.printers.only": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [],
+                        "description": "List of printers (identified by their string name) to only run in the LSP server."
+                    }
+                }
+            },
+            {
+                "title": "Graphs",
+                "order": 3,
+                "properties": {
+                    "wake.generator.imports_graph.direction": {
+                        "type": "string",
+                        "enum": [
+                            "TB",
+                            "BT",
+                            "LR",
+                            "RL"
+                        ],
+                        "default": "TB",
+                        "markdownDescription": "The direction of the generated imports graph (see [Graphviz docs](https://graphviz.org/docs/attrs/rankdir/))."
+                    },
+                    "wake.generator.imports_graph.imports_direction": {
+                        "type": "string",
+                        "enum": [
+                            "imported-to-importing",
+                            "importing-to-imported"
+                        ],
+                        "default": "imported-to-importing",
+                        "markdownDescription": "The direction of arrows in the generated imports graph."
+                    },
+                    "wake.generator.imports_graph.vscode_urls": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Generate vscode:// URLs in the generated imports graph."
+                    },
+                    "wake.generator.inheritance_graph_full.direction": {
+                        "type": "string",
+                        "enum": [
+                            "TB",
+                            "BT",
+                            "LR",
+                            "RL"
+                        ],
+                        "default": "BT",
+                        "markdownDescription": "The direction of the inheritance graph generated for the whole project (see [Graphviz docs](https://graphviz.org/docs/attrs/rankdir/))."
+                    },
+                    "wake.generator.inheritance_graph_full.vscode_urls": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Generate vscode:// URLs in the inheritance graph generated for the whole project."
+                    }
+                }
+            },
+            {
+                "title": "LSP",
+                "order": 4,
+                "properties": {
+                    "wake.lsp.compilation_delay": {
+                        "type": "number",
+                        "default": 0,
+                        "description": "Delay in seconds before the project is compiled after a keystroke."
+                    },
+                    "wake.lsp.code_lens.enable": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Enable code lens."
+                    },
+                    "wake.lsp.code_lens.sort_tag_priority": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [
+                            "lsp-references",
+                            "lsp-selectors",
+                            "lsp-inheritance-graph",
+                            "lsp-linearized-inheritance-graph"
+                        ],
+                        "description": "Order of code lens with the same start and end position based on sort tags used in detectors/printers. Sort tags default to the printer/detector name."
+                    },
+                    "wake.lsp.inlay_hints.enable": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Enable inlay hints."
+                    },
+                    "wake.lsp.inlay_hints.sort_tag_priority": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [],
+                        "description": "Order of inlay hints with the same position based on sort tags used in detectors/printers. Sort tags default to the printer/detector name."
+                    },
+                    "wake.lsp.detectors.enable": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Enable Wake vulnerability detectors."
+                    },
+                    "wake.lsp.find_references.include_declarations": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Also include declarations in 'Go to references' results."
+                    }
+                }
+            }
+        ],
+        "languages": [
+            {
+                "id": "solidity",
+                "extensions": [
+                    ".sol"
+                ],
+                "aliases": [
+                    "Solidity",
+                    "sol"
+                ],
+                "configuration": "./language-configuration.json"
+            },
+            {
+                "id": "tools-for-solidity-output",
+                "extensions": [
+                    ".output"
+                ],
+                "configuration": "./resources/log.configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "solidity",
+                "scopeName": "source.solidity",
+                "path": "./syntaxes/solidity.tmLanguage.json"
+            },
+            {
+                "language": "tools-for-solidity-output",
+                "scopeName": "source.wake.output",
+                "path": "./syntaxes/log.configuration.json"
+            }
+        ],
+        "commands": [
+            {
+                "command": "Tools-for-Solidity.wake.restart_client",
+                "title": "Solidity: Restart Wake LSP Client"
+            },
+            {
+                "command": "Tools-for-Solidity.generate.imports_graph",
+                "title": "Solidity: Generate Imports Graph"
+            },
+            {
+                "command": "Tools-for-Solidity.generate.inheritance_graph",
+                "title": "Solidity: Generate Inheritance Graph"
+            },
+            {
+                "command": "Tools-for-Solidity.foundry.import_remappings",
+                "title": "Solidity: Import Foundry Remappings"
+            },
+            {
+                "command": "Tools-for-Solidity.coverage.show",
+                "title": "Solidity: Show Coverage"
+            },
+            {
+                "command": "Tools-for-Solidity.coverage.hide",
+                "title": "Solidity: Hide Coverage"
+            },
+            {
+                "command": "Tools-for-Solidity.init.detector",
+                "title": "Solidity: New Detector"
+            },
+            {
+                "command": "Tools-for-Solidity.init.global_detector",
+                "title": "Solidity: New Global Detector"
+            },
+            {
+                "command": "Tools-for-Solidity.init.printer",
+                "title": "Solidity: New Printer"
+            },
+            {
+                "command": "Tools-for-Solidity.init.global_printer",
+                "title": "Solidity: New Global Printer"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.force_rerun_detectors",
+                "title": "Solidity: Force Rerun Detectors",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.force_recompile",
+                "title": "Solidity: Force Recompile Project",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.open_docs",
+                "title": "Open Documentation",
+                "icon": "$(book)"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.group.impact",
+                "title": "◯ Group by Impact"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.group.file",
+                "title": "◯ Group by File"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.group.confidence",
+                "title": "◯ Group by Confidence"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.group.detector",
+                "title": "◯ Group by Detector"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.group.impact_selected",
+                "title": "◉ Group by Impact"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.group.file_selected",
+                "title": "◉ Group by File"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.group.confidence_selected",
+                "title": "◉ Group by Confidence"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.group.detector_selected",
+                "title": "◉ Group by Detector"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.impact.high",
+                "title": "◯ Impact: High"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.impact.medium",
+                "title": "◯ Impact: High/Medium"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.impact.low",
+                "title": "◯ Impact: High/Medium/Low"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.impact.warning",
+                "title": "◯ Impact: High/Medium/Low/Warning"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.impact.info",
+                "title": "◯ Impact: All"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.impact.high_selected",
+                "title": "◉ Impact: High"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.impact.medium_selected",
+                "title": "◉ Impact: High/Medium"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.impact.low_selected",
+                "title": "◉ Impact: High/Medium/Low"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.impact.warning_selected",
+                "title": "◉ Impact: High/Medium/Low/Warning"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.impact.info_selected",
+                "title": "◉ Impact: All"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.confidence.high",
+                "title": "◯ Confidence: High"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.confidence.medium",
+                "title": "◯ Confidence: High/Medium"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.confidence.low",
+                "title": "◯ Confidence: All"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.confidence.high_selected",
+                "title": "◉ Confidence: High"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.confidence.medium_selected",
+                "title": "◉ Confidence: High/Medium"
+            },
+            {
+                "command": "Tools-for-Solidity.detections.filter.confidence.low_selected",
+                "title": "◉ Confidence: All"
+            },
+            {
+                "command": "Tools-for-Solidity.sake.compile",
+                "title": "Solidity Deploy & Interact: Compile"
+            },
+            {
+                "command": "Tools-for-Solidity.sake.show_history",
+                "title": "Solidity Deploy & Interact: Show Transaction History",
+                "icon": "$(history)"
+            },
+            {
+                "command": "Tools-for-Solidity.config.enable-prerelease",
+                "title": "Solidity: Enable Wake Prerelease",
+                "enablement": "!Tools-for-Solidity.Wake.prerelease"
+            },
+            {
+                "command": "Tools-for-Solidity.config.disable-prerelease",
+                "title": "Solidity:  Disable Wake Prerelease",
+                "enablement": "Tools-for-Solidity.Wake.prerelease"
+            },
+            {
+                "command": "Tools-for-Solidity.sake.copyFromResults",
+                "title": "Solidity: Copy From Results",
+                "icon": "$(copy)"
+            },
+            {
+                "command": "Tools-for-Solidity.sake.save-state",
+                "title": "Solidity: Save Chains State",
+                "icon": "$(save)"
+            },
+            {
+                "command": "Tools-for-Solidity.sake.delete-state",
+                "title": "Solidity: Delete Chains State"
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "tools-for-solidity",
+                    "title": "Solidity: Errors & Detections",
+                    "icon": "resources/icons/activity_bar_solidity.png"
+                },
+                {
+                    "id": "sake",
+                    "title": "Solidity: Deploy & Interact",
+                    "icon": "resources/icons/activity_bar_deploy_interact.png"
+                }
+            ],
+            "panel": [
+                {
+                    "id": "sake-output",
+                    "title": "Solidity: Transactions",
+                    "icon": ""
+                }
+            ]
+        },
+        "views": {
+            "tools-for-solidity": [
+                {
+                    "id": "wake-detections",
+                    "name": "Wake Detections"
+                },
+                {
+                    "id": "solc-detections",
+                    "name": "Compiler Errors"
+                }
+            ],
+            "sake": [
+                {
+                    "type": "webview",
+                    "id": "sake",
+                    "name": "Deploy & Interact"
+                }
+            ],
+            "sake-output": [
+                {
+                    "id": "sake-output",
+                    "name": "Transactions"
+                }
+            ]
+        },
+        "menus": {
+            "view/title": [
+                {
+                    "command": "Tools-for-Solidity.detections.force_rerun_detectors",
+                    "when": "view == wake-detections",
+                    "group": "navigation@3"
+                },
+                {
+                    "submenu": "tools-for-solidity.detections.group",
+                    "when": "view == wake-detections",
+                    "group": "navigation@1"
+                },
+                {
+                    "submenu": "tools-for-solidity.detections.filter",
+                    "when": "view == wake-detections",
+                    "group": "navigation@2"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.force_recompile",
+                    "when": "view == solc-detections",
+                    "group": "navigation@3"
+                },
+                {
+                    "command": "Tools-for-Solidity.sake.show_history",
+                    "when": "view == sake-output",
+                    "group": "navigation"
+                },
+                {
+                    "command": "Tools-for-Solidity.sake.save-state",
+                    "when": "view == sake",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "Tools-for-Solidity.detections.open_docs",
+                    "when": "view == wake-detections && viewItem == DETECTOR",
+                    "group": "inline"
+                },
+                {
+                    "command": "Tools-for-Solidity.sake.copyFromResults",
+                    "when": "view == sake-output && viewItem == copyable",
+                    "group": "inline"
+                }
+            ],
+            "tools-for-solidity.detections.filter": [
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.high",
+                    "group": "1_impact@2",
+                    "when": "detections.filterImpact != 'HIGH'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.medium",
+                    "group": "1_impact@3",
+                    "when": "detections.filterImpact != 'MEDIUM'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.low",
+                    "group": "1_impact@4",
+                    "when": "detections.filterImpact != 'LOW'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.warning",
+                    "group": "1_impact@5",
+                    "when": "detections.filterImpact != 'WARNING'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.info",
+                    "group": "1_impact@1",
+                    "when": "detections.filterImpact != 'INFO'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.high_selected",
+                    "group": "1_impact@2",
+                    "when": "detections.filterImpact == 'HIGH'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.medium_selected",
+                    "group": "1_impact@3",
+                    "when": "detections.filterImpact == 'MEDIUM'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.low_selected",
+                    "group": "1_impact@4",
+                    "when": "detections.filterImpact == 'LOW'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.warning_selected",
+                    "group": "1_impact@5",
+                    "when": "detections.filterImpact == 'WARNING'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.info_selected",
+                    "group": "1_impact@1",
+                    "when": "detections.filterImpact == 'INFO'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.confidence.high",
+                    "group": "2_confidence@2",
+                    "when": "detections.filterConfidence != 'HIGH'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.confidence.medium",
+                    "group": "2_confidence@3",
+                    "when": "detections.filterConfidence != 'MEDIUM'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.confidence.low",
+                    "group": "2_confidence@1",
+                    "when": "detections.filterConfidence != 'LOW'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.confidence.high_selected",
+                    "group": "2_confidence@2",
+                    "when": "detections.filterConfidence == 'HIGH'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.confidence.medium_selected",
+                    "group": "2_confidence@3",
+                    "when": "detections.filterConfidence == 'MEDIUM'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.confidence.low_selected",
+                    "group": "2_confidence@1",
+                    "when": "detections.filterConfidence == 'LOW'"
+                }
+            ],
+            "tools-for-solidity.detections.group": [
+                {
+                    "command": "Tools-for-Solidity.detections.group.file",
+                    "group": "group@1",
+                    "when": "detections.group != 'FILE'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.group.impact",
+                    "group": "group@2",
+                    "when": "detections.group != 'IMPACT'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.group.confidence",
+                    "group": "group@3",
+                    "when": "detections.group != 'CONFIDENCE'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.group.detector",
+                    "group": "group@4",
+                    "when": "detections.group != 'DETECTOR'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.group.file_selected",
+                    "group": "group@1",
+                    "when": "detections.group == 'FILE'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.group.impact_selected",
+                    "group": "group@2",
+                    "when": "detections.group == 'IMPACT'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.group.confidence_selected",
+                    "group": "group@3",
+                    "when": "detections.group == 'CONFIDENCE'"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.group.detector_selected",
+                    "group": "group@4",
+                    "when": "detections.group == 'DETECTOR'"
+                }
+            ],
+            "commandPalette": [
+                {
+                    "command": "Tools-for-Solidity.detections.group.file",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.group.impact",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.group.confidence",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.group.detector",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.group.file_selected",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.group.impact_selected",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.group.confidence_selected",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.group.detector_selected",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.high",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.medium",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.low",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.warning",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.info",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.high_selected",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.medium_selected",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.low_selected",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.warning_selected",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.impact.info_selected",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.confidence.high",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.confidence.medium",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.confidence.low",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.confidence.high_selected",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.confidence.medium_selected",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.detections.filter.confidence.low_selected",
+                    "when": "false"
+                },
+                {
+                    "command": "Tools-for-Solidity.sake.copyFromResults",
+                    "when": "false"
+                }
+            ]
+        },
+        "submenus": [
+            {
+                "id": "tools-for-solidity.detections.filter",
+                "label": "Filter",
+                "icon": "$(filter)"
+            },
+            {
+                "id": "tools-for-solidity.detections.group",
+                "label": "Group by",
+                "icon": "$(list-tree)"
+            }
+        ],
+        "walkthroughs": [
+            {
+                "id": "tfs-walkthrough",
+                "title": "Getting started with Solidity",
+                "description": "Discover powerful features of Solidity and learn how to enhance your development experience.",
+                "steps": [
+                    {
+                        "id": "select-wake-installation",
+                        "title": "Setup: Select Wake installation method",
+                        "description": "Solidity needs to install [Wake](https://getwake.io/) to run. By default, Wake is installed using conda for best compatibility. You can change the installation method below.\n**Recommended**: Only change the installation method if necessary.\n[Change Installation Method](command:Tools-for-Solidity.select-installation-method)",
+                        "media": {
+                            "markdown": "./resources/walkthrough/blank.md"
+                        }
+                    },
+                    {
+                        "id": "rosetta-macos-native",
+                        "title": "Setup: Enable Rosetta",
+                        "description": "It looks like you are running on macOS Native. To ensure full compatibility with our extension, please make sure you have Rosetta installed.\n**Tip**: To install Rosetta, you can run [this command](command:Tools-for-Solidity.send-rosetta-command).",
+                        "media": {
+                            "markdown": "./resources/walkthrough/test.md"
+                        },
+                        "when": "isMacNative"
+                    },
+                    {
+                        "id": "linux-arm",
+                        "title": "Setup: Linux on ARM64",
+                        "description": "You appear to be using Linux. In case you are running on ARM64, please note that this extension doesn't currently support this architecture.",
+                        "media": {
+                            "markdown": "./resources/walkthrough/blank.md"
+                        },
+                        "when": "isLinux"
+                    },
+                    {
+                        "id": "detectors",
+                        "title": "Catch vulnerabilities with Detectors",
+                        "description": "See vulnerabilities and compiler warnings/errors of your code in real-time inside your sidebar.\n[See Detections](command:Tools-for-Solidity.open-detections-ui)",
+                        "media": {
+                            "image": "./resources/walkthrough/detectors.png",
+                            "altText": "Detectors"
+                        },
+                        "completionEvents": [
+                            "onCommand:Tools-for-Solidity.open-detections-ui"
+                        ]
+                    },
+                    {
+                        "id": "sake",
+                        "title": "Deploy & Interact with Smart Contracts",
+                        "description": "Deploy & Interact view allows you to deploy, call, and test your contracts directly from VS Code.\n[Open Deploy and Interact](command:Tools-for-Solidity.open-sake-ui)",
+                        "media": {
+                            "image": "./resources/walkthrough/sake.png",
+                            "altText": "Deploy & Interact"
+                        },
+                        "completionEvents": [
+                            "onCommand:Tools-for-Solidity.open-sake-ui"
+                        ]
+                    },
+                    {
+                        "id": "language-server",
+                        "title": "Speed up your workflow with LSP features",
+                        "description": "Solidity ships with a powerful language server which adds support for **CodeLens**, **Go to Definition**, **Find References**, and more.",
+                        "media": {
+                            "image": "./resources/walkthrough/lsp.png",
+                            "altText": "LSP Server"
+                        }
+                    },
+                    {
+                        "id": "graphs",
+                        "title": "Visualize relations in code",
+                        "description": "Different graph types can be generated to better visualize the relations in the code.\n**Tip**: You can view graphs via hints displayed over contracts and functions.",
+                        "media": {
+                            "image": "./resources/walkthrough/graphs.png",
+                            "altText": "Graphs"
+                        }
+                    }
+                ]
+            }
+        ],
+        "viewsWelcome": [
+            {
+                "view": "wake-detections",
+                "contents": ""
+            },
+            {
+                "view": "solc-detections",
+                "contents": ""
+            },
+            {
+                "view": "sake",
+                "contents": ""
+            },
+            {
+                "view": "sake-output",
+                "contents": "Transactions from the Deploy & Interact view will be displayed here."
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run package",
+        "webpack": "webpack --mode development",
+        "webpack-dev": "webpack --mode development --watch",
+        "package": "webpack --mode production --devtool hidden-source-map",
+        "test-compile": "tsc -p ./",
+        "build": "npm run build.webview && npm run build.extension",
+        "dev": "concurrently \"npm run build.extension.dev\" \"npm run build.webview.dev\"",
+        "build.extension": "webpack --mode development",
+        "build.extension.dev": "webpack --mode development --watch",
+        "build.webview": "cd src/sake/webview && npm run build",
+        "build.webview.dev": "cd src/sake/webview && npm run dev",
+        "clean-install": "npm run clean-install.webview && npm run clean-install.extension",
+        "clean-install.webview": "cd src/sake/webview && npm ci",
+        "clean-install.extension": "npm ci"
+    },
+    "devDependencies": {
+        "@types/glob": "^7.2.0",
+        "@types/mocha": "^9.1.1",
+        "@types/node": "^16.18.97",
+        "@types/polka": "^0.5.7",
+        "@types/tmp": "^0.2.6",
+        "@types/uuid": "^10.0.0",
+        "@types/vscode": "^1.75.0",
+        "@types/vscode-webview": "^1.57.5",
+        "@typescript-eslint/eslint-plugin": "^5.30.0",
+        "@typescript-eslint/parser": "^5.30.0",
+        "@vscode/test-electron": "^2.1.5",
+        "@vscode/vsce": "^2.22.0",
+        "concurrently": "^8.2.2",
+        "copy-webpack-plugin": "^12.0.2",
+        "eslint": "^8.57.1",
+        "eslint-config-airbnb-base": "^15.0.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-import": "^2.31.0",
+        "eslint-plugin-prettier": "^5.2.1",
+        "glob": "^8.0.3",
+        "mocha": "^10.0.0",
+        "prettier": "^3.3.3",
+        "run-parallel": "^1.2.0",
+        "ts-loader": "^9.4.1",
+        "typescript": "^5.6.2",
+        "webpack": "^5.88.2",
+        "webpack-cli": "^4.10.0",
+        "webpack-watch-external-files-plugin": "^3.1.0",
+        "webpack-watch-files-plugin": "^1.2.1"
+    },
+    "dependencies": {
+        "@estruyf/vscode": "^1.1.0",
+        "@google-cloud/storage": "^7.11.2",
+        "@hpcc-js/wasm": "^2.1.0",
+        "@renovatebot/pep440": "^2.0.0",
+        "applicationinsights": "^2.9.0",
+        "camelcase-keys": "^9.1.3",
+        "crypto": "^1.0.1",
+        "execa": "^8.0.1",
+        "get-port": "^5.1.1",
+        "node-fetch": "^3.3.2",
+        "open": "^10.1.0",
+        "pidtree": "^0.6.0",
+        "polka": "^0.5.2",
+        "sirv": "^2.0.4",
+        "tar": "^7.4.0",
+        "tmp": "^0.2.3",
+        "uuid": "^10.0.0",
+        "vscode-languageclient": "^8.0.1",
+        "wait-port": "^0.3.0",
+        "web3-eth-abi": "^4.2.2",
+        "web3-utils": "^4.3.0"
+    }
+}
